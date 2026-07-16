@@ -4,7 +4,7 @@ public class Cliente {
     private int id;
     private String nome;
     private String email;
-    private long cpf;
+    private String cpf;
     private String rua;
     private int numero;
     private String bairro;
@@ -18,7 +18,7 @@ public Cliente(){
 
     }
 
-    public Cliente(String nome, String email, long cpf, String rua, int numero, String bairro, String cidade, int cep, String estado){
+    public Cliente(String nome, String email, String cpf, String rua, int numero, String bairro, String cidade, int cep, String estado){
         setNome(nome);
         setEmail(email);
         setCpf(cpf);
@@ -30,7 +30,7 @@ public Cliente(){
         setEstado(estado);
     }
 
-    public Cliente(int id, String nome, String email, long cpf, String rua, int numero, String bairro, String cidade, int cep, String estado){
+    public Cliente(int id, String nome, String email, String cpf, String rua, int numero, String bairro, String cidade, int cep, String estado){
         setId(id);
         setNome(nome);
         setEmail(email);
@@ -56,7 +56,7 @@ public Cliente(){
         return this.email;
     }
 
-    public long getCpf() {
+    public String getCpf() {
         return this.cpf;
     }
 
@@ -98,7 +98,7 @@ public Cliente(){
         this.email = email;
     }
 
-    public void setCpf(long cpf){
+    public void setCpf(String cpf){
         this.cpf = cpf;
     }
 

@@ -18,7 +18,7 @@ public class clienteDao implements ICRUDcliente {
             PreparedStatement stm = con.prepareStatement(sql);
             stm.setString(1, cliente.getNome());
             stm.setString(2, cliente.getEmail());
-            stm.setLong(3, cliente.getCpf());
+            stm.setString(3, cliente.getCpf());
             stm.setString(4, cliente.getRua());
             stm.setInt(5, cliente.getNumero());
             stm.setString(6, cliente.getBairro());
@@ -68,7 +68,7 @@ public class clienteDao implements ICRUDcliente {
             PreparedStatement stm = con.prepareStatement(sql);
             stm.setString(1, cliente.getNome());
             stm.setString(2, cliente.getEmail());
-            stm.setLong(3, cliente.getCpf());
+            stm.setString(3, cliente.getCpf());
             stm.setString(4, cliente.getRua());
             stm.setInt(5, cliente.getNumero());
             stm.setString(6, cliente.getBairro());
@@ -92,7 +92,7 @@ public class clienteDao implements ICRUDcliente {
     @Override
     public Cliente consultar(int id) {
         System.out.println("Consultando cliente com id: " + id);
-        return new Cliente(id, "Nome do cliente: ", "email@example.com", 123456789011L, "Rua Exemplo", 123, "Bairro Exemplo", "Cidade Exemplo", 12345678, "Estado Exemplo");
+        return new Cliente(id, "Nome do cliente: ", "email@example.com", "123456789011L", "Rua Exemplo", 123, "Bairro Exemplo", "Cidade Exemplo", 12345678, "Estado Exemplo");
     }
 
     @Override
@@ -107,7 +107,7 @@ public class clienteDao implements ICRUDcliente {
             PreparedStatement stm = con.prepareStatement(sql);
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                Cliente c = new Cliente(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getLong(4), rs.getString(5), rs.getInt(6), rs.getString(7), rs.getString(8), rs.getInt(9), rs.getString(10));
+                Cliente c = new Cliente(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getInt(6), rs.getString(7), rs.getString(8), rs.getInt(9), rs.getString(10));
                 clientes.add(c);
             }
         } catch (SQLException e) {
