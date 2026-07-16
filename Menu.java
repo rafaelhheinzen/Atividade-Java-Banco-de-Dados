@@ -44,7 +44,11 @@ public class Menu {
             System.out.println("Insira o preço do produto: ");
             double preco = input.nextDouble();
 
-            Produto p1 = new Produto(descricao, preco);
+            System.out.println("");
+            System.out.println("Insira a quantidade de estoque do produto: ");
+            int estoque = input.nextInt();
+
+            Produto p1 = new Produto(descricao, preco, estoque);
             dao.salvar(p1);
         }
 
@@ -52,14 +56,17 @@ public class Menu {
             List<Produto> lista = dao.consultar();
 
             // Números estranhos para a compactação do texto no resultado
-            System.out.printf("| %-5s | %-20s | %-10s |%n", "ID", "Descrição", "Preço");
-            System.out.println("|-------|----------------------|------------|");
+
+            System.out.println();
+            System.out.printf("| %-5s | %-20s | %-10s | %-10s |%n", "ID", "Descrição", "Preço", "Estoque");
+            System.out.println("|-------|----------------------|------------|------------|");
 
             for (Produto p : lista) {
-                System.out.printf("| %-5d | %-20s | %10.2f |%n",
+                System.out.printf("| %-5d | %-20s | %10.2f | %10d |%n",
                         p.getId(),
                         p.getDescricao(),
-                        p.getPreco());
+                        p.getPreco(),
+                        p.getEstoque());
             }
 
         }
@@ -78,7 +85,11 @@ public class Menu {
             System.out.println("Insira o novo preço do produto: ");
             double preco = input.nextDouble();
 
-            Produto p2 = new Produto(id, descricao, preco);
+            System.out.println("");
+            System.out.println("Insira o novo estoque do produto: ");
+            int estoque = input.nextInt();
+
+            Produto p2 = new Produto(id, descricao, preco, estoque);
             dao.alterar(p2);
 
         }

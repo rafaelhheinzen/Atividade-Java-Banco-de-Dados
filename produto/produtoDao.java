@@ -12,12 +12,13 @@ public class produtoDao implements ICRUD {
     @Override
     public Produto salvar(Produto produto) {
         produto.setId(1);
-        String sql = "insert into tb_produtos(descricao, preco)values(?,?)";
+        String sql = "insert into tb_produtos(descricao, preco, estoque)values(?,?,?)";
         Connection con = ConectaDB.getConnection();
         try {
             PreparedStatement stm = con.prepareStatement(sql);
             stm.setString(1, produto.getDescricao());
             stm.setDouble(2, produto.getPreco());
+            stm.setInt(3, produto.getEstoque());
             stm.execute();
 
             stm.close();
@@ -54,14 +55,15 @@ public class produtoDao implements ICRUD {
     @Override
     public void alterar(Produto produto) {
 
-        String sql = "update tb_produtos set descricao = ?, preco = ? where id = ?";
+        String sql = "update tb_produtos set descricao = ?, preco = ?, estoque = ? where id = ?";
         Connection con = ConectaDB.getConnection();
 
         try {
             PreparedStatement stm = con.prepareStatement(sql);
             stm.setString(1, produto.getDescricao());
             stm.setDouble(2, produto.getPreco());
-            stm.setInt(3, produto.getId());
+            stm.setInt(3, produto.getEstoque());
+            stm.setInt(4, produto.getId());
             stm.execute();
 
             stm.close();
@@ -78,7 +80,7 @@ public class produtoDao implements ICRUD {
     @Override
     public Produto consultar(int id) {
         System.out.println("Consultando produto com id: " + id);
-        return new Produto(id, "Nome do produto: " + id, 10);
+        return new Produto(id, "Nome do produto: " + id, 10, 1);
     }
 
     @Override
@@ -89,14 +91,14 @@ public class produtoDao implements ICRUD {
         Connection con = ConectaDB.getConnection();
         String sql = "select * from tb_produtos";
 
-        try{
+        try {
             PreparedStatement stm = con.prepareStatement(sql);
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                Produto p = new Produto(rs.getInt(1),rs.getString(2),rs.getDouble(3));
+                Produto p = new Produto(rs.getInt(1), rs.getString(2), rs.getDouble(3), rs.getInt(4));
                 produtos.add(p);
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
