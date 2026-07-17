@@ -30,7 +30,6 @@ public class Menu {
         System.out.println("");
         System.out.println("1. Área produtos");
         System.out.println("2. Área clientes");
-        System.out.println("3. Vendas (Carrinho)");
     }
 
     public void showMenuProdutos() {
@@ -51,15 +50,6 @@ public class Menu {
         System.out.println("4. Deletar cliente");
     }
 
-    public void showMenuCarrinho() {
-        System.out.println("");
-        System.out.println("Área carrinho");
-        System.out.println("");
-        System.out.println("1. Adicionar produto");
-        System.out.println("2. Remover produto");
-        System.out.println("3. Ver carrinho");
-    }
-
     public void chooseMenu(int option) {
         if (option == 1) {
             showMenuProdutos();
@@ -73,13 +63,6 @@ public class Menu {
             int optionCliente = input.nextInt();
             input.nextLine();
             chooseCliente(optionCliente);
-        }
-
-        if (option == 3){
-            showMenuCarrinho();
-            int optionCarrinho = input.nextInt();
-            input.nextLine();
-            chooseCarrinho(optionCarrinho);
         }
     }
 
@@ -285,71 +268,6 @@ public class Menu {
             System.out.println("");
             System.out.println("Cliente deletado!");
         }
-    }
-
-    public void chooseCarrinho(int option) {
-        System.out.println("--- NOVO PEDIDO ---");
-    System.out.println("Insira o ID do cliente que está comprando: ");
-    int idCliente = input.nextInt();
-    input.nextLine(); 
-
-    Pedido carrinho = new Pedido(idCliente, "Aberto");
-
-    boolean fechandoCarrinho = false;
-
-    while (!fechandoCarrinho) {
-        System.out.println("\n== GERENCIAR CARRINHO ==");
-        System.out.println("1. Adicionar Produto");
-        System.out.println("2. Finalizar e Salvar Pedido");
-        System.out.println("3. Cancelar Pedido");
-        int escolha = input.nextInt();
-        input.nextLine();
-
-        if (escolha == 1) {
-            System.out.println("Insira o ID do produto: ");
-            int idProduto = input.nextInt();
-            
-            Produto prod = dao.consultar(idProduto); 
-
-            if (prod != null) {
-                System.out.println("Produto encontrado: " + prod.getDescricao() + " | Preço: R$" + prod.getPreco());
-                System.out.println("Insira a quantidade desejada: ");
-                int qtd = input.nextInt();
-                input.nextLine();
-
-                if (qtd <= prod.getEstoque()) {
-                    
-                    ItemPedido item = new ItemPedido(prod, qtd);
-                    carrinho.adicionarItem(item);
-                    System.out.println("Produto adicionado ao carrinho!");
-                } else {
-                    System.out.println("Estoque insuficiente! Estoque disponível: " + prod.getEstoque());
-                }
-            } else {
-                System.out.println("Produto não encontrado no sistema.");
-            }
-
-        } else if (escolha == 2) {
-            if (carrinho.getItens().isEmpty()) {
-                System.out.println("Não é possível finalizar um pedido sem itens!");
-            } else {
-            
-                pedidoDao daoPedido = new pedidoDao();
-                
-                
-                System.out.println("Valor total do pedido: R$ " + carrinho.getValorTotal());
-                
-                
-                daoPedido.salvar(carrinho); 
-                
-                System.out.println("Pedido finalizado com sucesso!");
-                fechandoCarrinho = true;
-            }
-        } else if (escolha == 3) {
-            System.out.println("Pedido cancelado.");
-            fechandoCarrinho = true;
-        }
-    }
     }
 
     public void repeat() {

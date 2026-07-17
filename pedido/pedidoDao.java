@@ -29,26 +29,6 @@ public class pedidoDao implements ICRUDpedido {
         }
     }
 
-    @Override
-    public void deletar(int id) {
-
-        String sql = "delete from tb_pedidos where id = ?";
-        Connection con = ConectaDB.getConnection();
-
-        try {
-            PreparedStatement stm = con.prepareStatement(sql);
-            stm.setInt(1, id);
-            stm.execute();
-
-            stm.close();
-            con.close();
-
-            System.out.println("Deletando pedido: " + id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        }
-    }
 
     @Override
     public void alterar(Pedido pedido) {
