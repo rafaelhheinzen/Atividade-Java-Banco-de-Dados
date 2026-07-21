@@ -12,23 +12,52 @@ public class pedidoDao implements ICRUDpedido {
     @Override
     public Pedido salvar(Pedido pedido) {
         String sql = "insert into tb_pedidos(cliente_id, status_pedido) values(?,?)";
+        String sqlItem = "INSERT INTO tb_itens_pedido(pedido_id, produto_id, quantidade, preco_unitario) VALUES (?, ?, ?, ?)";
+
         Connection con = ConectaDB.getConnection();
         try {
-            PreparedStatement stm = con.prepareStatement(sql);
-            stm.setInt(1, pedido.getIdCliente());
-            stm.setString(2, pedido.getStatusPedido());
-            stm.execute();
+            PreparedStatement stmPedido = con.prepareStatement(sql);
+            stmPedido.setInt(1, pedido.getIdCliente());
+            stmPedido.setString(2, pedido.getStatusPedido());
+            stmPedido.executeUpdate();
 
-            stm.close();
+
+            ResultSet rsKeys = stmPedido.getGeneratedKeys();
+            int pedidoIdGenerado = 0;
+            if (rsKeys.next()) {
+                pedidoIdGenerado = rsKeys.getInt(1);
+                pedido.setId(pedidoIdGenerado);
+            }
+            stmPedido.close();
+ 
+
+            PreparedStatement stmItem = con.prepareStatement(sqlItem);
+            for (ItemPedido item : pedido.getItens()) {
+                stmItem.setInt(1, pedido.getId());
+                stmItem.setInt(2, item.getProduto().getId());
+                stmItem.setInt(3, item.getQuantidade());
+                stmItem.setDouble(4, item.getPrecoUnitario());
+                stmItem.addBatch();
+            }
+
+            stmItem.executeBatch();
+            stmItem.close();
+
+            con.commit();
             con.close();
 
+            System.out.println("Pedido " + pedidoIdGenerado + " e seus itens foram salvos com sucesso!");
             return pedido;
         } catch (SQLException e) {
+            try {
+                con.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
             return null;
         }
     }
-
 
     @Override
     public void alterar(Pedido pedido) {
