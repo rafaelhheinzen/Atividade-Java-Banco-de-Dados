@@ -80,13 +80,27 @@ public class produtoDao implements ICRUD {
     @Override
     public Produto consultar(int id) {
         System.out.println("Consultando produto com id: " + id);
-        return new Produto(id, "Nome do produto: " + id, 10, 1);
+
+        Connection con = ConectaDB.getConnection();
+        String sql = "select id, descricao, preco, estoque from tb_produtos where id = ?";
+
+        try {
+            PreparedStatement stm = con.prepareStatement(sql);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                return new Produto(rs.getInt(1), rs.getString(2), rs.getDouble(3), rs.getInt(4));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
     public List<Produto> consultar() {
         System.out.println("Consultando todos os produtos");
-
         List<Produto> produtos = new ArrayList<Produto>();
         Connection con = ConectaDB.getConnection();
         String sql = "select * from tb_produtos";

@@ -14,10 +14,6 @@ import pedido.Pedido;
 import pedido.pedidoDao;
 import pedido.ICRUDpedido;
 
-
-
-
-
 public class Menu {
     Scanner input = new Scanner(System.in);
 
@@ -26,10 +22,15 @@ public class Menu {
     ICRUDpedido daoPedido = new pedidoDao();
 
     public void showMenu() {
+        System.out.println("");
+        System.out.println("==============================================");
         System.out.println("Bem-vindo ao Produtos DB");
         System.out.println("");
         System.out.println("1. Área produtos");
         System.out.println("2. Área clientes");
+        System.out.println("3. Área pedidos");
+        System.out.println("==============================================");
+        System.out.println("");
     }
 
     public void showMenuProdutos() {
@@ -50,6 +51,15 @@ public class Menu {
         System.out.println("4. Deletar cliente");
     }
 
+    public void showMenuPedidos() {
+        System.out.println("Área pedidos");
+        System.out.println("");
+        System.out.println("1. Cadastrar pedido");
+        System.out.println("2. Consultar pedidos");
+        System.out.println("3. Alterar pedido");
+        System.out.println("4. Deletar pedido");
+    }
+
     public void chooseMenu(int option) {
         if (option == 1) {
             showMenuProdutos();
@@ -63,6 +73,13 @@ public class Menu {
             int optionCliente = input.nextInt();
             input.nextLine();
             chooseCliente(optionCliente);
+        }
+
+        if (option == 3) {
+            showMenuPedidos();
+            int optionPedido = input.nextInt();
+            input.nextLine();
+            choosePedido(optionPedido);
         }
     }
 
@@ -191,14 +208,13 @@ public class Menu {
             System.out.printf("| %-6s | %-15s | %-20s | %-14s | %-20s | %-6s | %-15s | %-15s | %-10s | %-6s |%n",
                     "ID", "Nome", "E-mail", "CPF", "Rua", "Nº", "Bairro", "Cidade", "CEP", "Estado");
 
-
             System.out.println(
                     "|--------|-----------------|----------------------|----------------|----------------------|--------|-----------------|-----------------|------------|--------|");
 
             for (Cliente c : lista) {
 
                 System.out.printf("| %-6s | %-15s | %-20s | %-14s | %-20s | %-6s | %-15s | %-15s | %-10s | %-6s |%n",
-                        c.getId(), 
+                        c.getId(),
                         c.getNome(),
                         c.getEmail(),
                         c.getCpf(),
@@ -267,6 +283,196 @@ public class Menu {
 
             System.out.println("");
             System.out.println("Cliente deletado!");
+        }
+    }
+
+    public void choosePedido(int option) {
+        if (option == 1) {
+            System.out.println("");
+            System.out.print("Insira o ID do Cliente para o pedido: ");
+            int idCliente = input.nextInt();
+            input.nextLine();
+
+            Pedido pedido = new Pedido(idCliente, "PROCESSANDO");
+
+            boolean adicionando = true;
+
+            while (adicionando == true) {
+                System.out.println("\n--- Adicionar Item ao Carrinho ---");
+                System.out.print("Insira o ID do Produto: ");
+                int idProduto = input.nextInt();
+                input.nextLine();
+
+                Produto prod = dao.consultar(idProduto);
+
+                if (prod == null) {
+                    System.out.println("Produto não encontrado! Tente novamente.");
+                } else {
+                    System.out.print("Insira a quantidade desejada: ");
+                    int quantidade = input.nextInt();
+
+                    ItemPedido item = new ItemPedido(prod, quantidade);
+                    pedido.adicionarItem(item);
+
+                    System.out.println(quantidade + "x " + prod.getDescricao() + " adicionado(s) ao carrinho!");
+
+                    System.out.print("\nDeseja adicionar outro produto? (1-Sim / 2-Não): ");
+                    int resp = input.nextInt();
+                    if (resp != 1) {
+                        adicionando = false;
+                    }
+                }
+
+                if (pedido.getItens().isEmpty()) {
+                    System.out.println("Nenhum item adicionado ao pedido. Pedido não será salvo.");
+                    return;
+                }
+
+                System.out.println("\nResumo do Pedido:");
+                for (ItemPedido item : pedido.getItens()) {
+                    System.out.printf("- %s | Qtd: %d | Un: R$ %.2f | Subtotal: R$ %.2f%n",
+                            item.getProduto().getDescricao(),
+                            item.getQuantidade(),
+                            item.getPrecoUnitario(),
+                            item.getSubtotal());
+                }
+
+                System.out.printf("VALOR TOTAL: R$ %.2f%n", pedido.getValorTotal());
+
+                System.out.print("\nConfirmar e Finalizar Pedido? (1-Sim / 2-Não): ");
+                int confirmar = input.nextInt();
+
+                if (confirmar == 1) {
+                    daoPedido.salvar(pedido);
+                    System.out.println("Pedido gravado no Banco de Dados!");
+                } else {
+                    System.out.println("Pedido cancelado.");
+                }
+
+            }
+
+        }
+
+        if (option == 2) {
+            List<Pedido> lista = daoPedido.consultar();
+
+            System.out.println();
+            System.out.printf("| %-5s | %-10s | %-20s | %-15s |%n", "ID", "ID Cliente", "Data Cadastro",
+                    "Status Pedido");
+            System.out.println("|-------|------------|----------------------|-----------------|");
+
+            for (Pedido p : lista) {
+                System.out.printf("| %-5d | %-10d | %-20s | %-15s |%n",
+                        p.getId(),
+                        p.getIdCliente(),
+                        p.getDataCadastro(),
+                        p.getStatusPedido());
+            }
+
+        }
+
+        if (option == 3) {
+            System.out.println("");
+            System.out.println("Insira o id do pedido que você quer alterar: ");
+            int id = input.nextInt();
+            input.nextLine();
+
+            Pedido p2 = daoPedido.consultar(id);
+
+            if (p2 == null) {
+                System.out.println("Pedido não encontrado!");
+                return;
+            } else {
+                System.out.println("");
+                System.out.println("Insira o novo status do pedido: (Atual: " + p2.getStatusPedido() + ")");
+                String statusPedido = input.nextLine();
+                p2.setStatusPedido(statusPedido);
+
+                System.out.println("");
+                System.out.println("Você deseja alterar os itens do pedido? (1-Sim / 2-Não): ");
+                int resp = input.nextInt();
+                input.nextLine();
+
+                if (resp == 1) {
+                    boolean alterandoItens = true;
+
+                    while (alterandoItens == true) {
+                        System.out.println("");
+                        System.out.println("-Adicionar item (1)");
+                        System.out.println("-Remover item (2)");
+                        System.out.println("-Finalizar alterações (3)");
+                        System.out.println("");
+                        int escolha = input.nextInt();
+
+                        if (escolha == 2) {
+                            System.out.println("");
+                            System.out.println("Insira o ID do Produto que você deseja remover do pedido: ");
+                            int idProdutoRemover = input.nextInt();
+                            input.nextLine();
+
+                            List<ItemPedido> itensAtuais = p2.getItens();
+                            ItemPedido itemParaRemover = null;
+
+                            for (ItemPedido item : itensAtuais) {
+                                if (item.getProduto().getId() == idProdutoRemover) {
+                                    itemParaRemover = item;
+                                    break;
+                                }
+                            }
+
+                            if (itemParaRemover != null) {
+                                p2.removerItem(itemParaRemover);
+                                System.out.println("Produto removido do pedido!");
+                            } else {
+                                System.out.println("Produto não encontrado no pedido.");
+                            }
+                        }
+
+                        if (escolha == 1) {
+                            System.out.println("");
+                            System.out.println("Insira o ID do Produto para adicionar ao pedido: ");
+                            int idProduto = input.nextInt();
+                            input.nextLine();
+
+                            Produto prod = dao.consultar(idProduto);
+
+                            if (prod == null) {
+                                System.out.println("Produto não encontrado! Tente novamente.");
+                            } else {
+                                System.out.println("");
+                                System.out.println("Insira a quantidade desejada: ");
+                                int quantidade = input.nextInt();
+
+                                ItemPedido item = new ItemPedido(prod, quantidade);
+                                p2.adicionarItem(item);
+
+                                System.out
+                                        .println(quantidade + "x " + prod.getDescricao() + " adicionado(s) ao pedido!");
+                            }
+                        }
+
+                        if (escolha == 3) {
+                            alterandoItens = false;
+                        }
+
+                    }
+
+                }
+
+                daoPedido.alterar(p2);
+                System.out.println("Alterações nos itens do pedido foram salvas!");
+            }
+
+        }
+
+        if (option == 4) {
+            System.out.println("");
+            System.out.println("Insira o id do pedido que você quer deletar: ");
+            int id = input.nextInt();
+            daoPedido.deletar(id);
+
+            System.out.println("");
+            System.out.println("Pedido deletado!");
         }
     }
 
