@@ -32,6 +32,10 @@ public class Pedido {
         this.itens.add(item);
     }
 
+    public void removerItem(ItemPedido item){
+        this.itens.remove(item);
+    }
+
 
     public List<ItemPedido> getItens() {
         return itens;
